@@ -1,0 +1,8 @@
+# Deps
+node_modules/
+
+# IDE
+.vscode
+
+# Env
+.env
