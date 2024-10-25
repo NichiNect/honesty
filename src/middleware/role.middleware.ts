@@ -2,7 +2,6 @@ import type { Context, Next } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 export const roleMiddleware = (role: string) => {
-
     return createMiddleware( async (ctx: Context, next: Next) => {
 
         console.log('middleware role ran');

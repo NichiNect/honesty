@@ -2,7 +2,6 @@ import type { Context, Next } from 'hono';
 import { createMiddleware } from 'hono/factory';
 
 export const authMiddleware = () => {
-
     return createMiddleware( async (ctx: Context, next: Next) => {
 
         console.log('middleware auth ran');

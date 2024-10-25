@@ -6,6 +6,9 @@ import { getMiddlewares } from './middleware_decorator';
 
 const routeMetadataKey = Symbol('routes');
 
+/**
+ * Decorator for HTTP Get method.
+ */
 export function Get(path: string) {
 
     return function (target: any,  propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) {
@@ -23,20 +26,35 @@ export function Get(path: string) {
         });
 
         Reflect.defineMetadata(routeMetadataKey, routes, target.constructor);
-    };
+    }
 }
 
+/**
+ * Decorator for HTTP Post method.
+ */
 export function Post(path: string) {
 
-    return function (target: any,  _: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) {
+    return function (target: any,  propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) {
 
-        const routes = Reflect.getMetadata(routeMetadataKey, target.constructor) || [];
-        routes.push({ method: 'post', path, handler: descriptor.value });
+        if (!descriptor.value) {
+            throw new Error('Descriptor value is undefined. Make sure the decorator Get is applied correctly.');
+        }
+
+        const routes: IRouteSchema[] = Reflect.getMetadata(routeMetadataKey, target.constructor) || [];
+        routes.push({
+            method: 'post',
+            path, 
+            handler: descriptor.value,
+            handlerName: propertyKey
+        });
 
         Reflect.defineMetadata(routeMetadataKey, routes, target.constructor);
-    };
+    }
 }
 
+/**
+ * Function for applying the route by controller class.
+ */
 export function applyRoutes(app: Hono, controller: any) {
 
     const instance = new controller();
@@ -46,6 +64,7 @@ export function applyRoutes(app: Hono, controller: any) {
 
         routes.forEach((route: IRouteSchema) => {
 
+            // ? Registering Middleware to route declaration.
             const middlewares = getMiddlewares(controller.prototype, route.handlerName) || [];
 
             if (middlewares.length > 0) {
@@ -53,6 +72,6 @@ export function applyRoutes(app: Hono, controller: any) {
             } else {
                 app[route.method as IHTTPMethod](route.path, (ctx: Context) => route.handler.call(instance, ctx));
             }
-        });
+        })
     }
 }
