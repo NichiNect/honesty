@@ -1,7 +1,10 @@
-export type HTTPMethod = 'get' | 'post'
+import type { Context } from "hono"
 
-export type RouteSchema = {
-    method: HTTPMethod,
+export type IHTTPMethod = 'get' | 'post'
+
+export type IRouteSchema = {
+    method: IHTTPMethod,
     path: string,
-    handler: Function
+    handler: (ctx: Context) => Promise<any>,
+    handlerName: string
 }

@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import { Hono } from 'hono';
-import { applyRoutes } from './core/route_decorator';
+import { applyRoutes } from './core/decorators/route_decorator';
 
 import { UserController } from './user';
 
