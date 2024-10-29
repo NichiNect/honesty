@@ -17,7 +17,12 @@ export class UserController {
     @Post('/user')
     @Middleware(['auth', 'role:admin'])
     public async store(ctx: Context) {
-        const user = await this.userService.getUserById(ctx.req.param('id'));
-        return ctx.json(user);
+
+        const body = await ctx.req.parseBody();
+
+        return ctx.json({
+            requestId: ctx.get('requestId'),
+            ...body
+        });
     }
 }

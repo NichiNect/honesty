@@ -3,6 +3,7 @@ import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { IRouteSchema, IHTTPMethod } from '../types/route_types';
 import { getMiddlewares } from './middleware_decorator';
+import { middlewareAliases } from '../../middleware';
 
 const routeMetadataKey = Symbol('routes');
 
@@ -55,7 +56,7 @@ export function Post(path: string) {
 /**
  * Function for applying the route by controller class.
  */
-export function applyRoutes(app: Hono, controller: any) {
+export function applyRoutes(app: Hono, controller: any, injectMiddlewares: string[] | Function[] = []): void {
 
     const instance = new controller();
     const routes: IRouteSchema[] = Reflect.getMetadata(routeMetadataKey, controller) || [];
@@ -66,6 +67,22 @@ export function applyRoutes(app: Hono, controller: any) {
 
             // ? Registering Middleware to route declaration.
             const middlewares = getMiddlewares(controller.prototype, route.handlerName) || [];
+
+            // ? Push injectable middleware controller.
+            if (injectMiddlewares?.length > 0) {
+
+                for (const injectableMiddleware of injectMiddlewares) {
+
+                    if (typeof injectableMiddleware == 'string') {
+                        if (!middlewareAliases[injectableMiddleware]) {
+                            throw new Error(`Middleware alias ${injectableMiddleware} not found. Please be sure to register.`);
+                        }
+                        middlewares.push(middlewareAliases[injectableMiddleware])
+                    } else if (typeof injectableMiddleware == 'function') {
+                        middlewares.push(injectableMiddleware);
+                    }
+                }
+            }
 
             if (middlewares.length > 0) {
                 app[route.method as IHTTPMethod](route.path, ...middlewares, (ctx: Context) => route.handler.call(instance, ctx));
