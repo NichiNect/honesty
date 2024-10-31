@@ -1,13 +1,13 @@
-export class CreateUserDto {
+import { z } from 'zod';
 
-    declare name: string;
+export const CreateUserSchema = z.object({
+    name: z.string().max(255),
+    email: z.string().max(255).email(),
+    role: z.string().max(64)
+})
 
-    declare email: string;
-}
+export type CreateUserDto = z.infer<typeof CreateUserSchema>
 
-export class UpdateUserDto {
+export const UpdateUserSchema = CreateUserSchema.partial()
 
-    declare name: string;
-
-    declare email: string;
-}
+export type UpdateUserDto = z.infer<typeof UpdateUserSchema>

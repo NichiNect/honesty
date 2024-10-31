@@ -2,6 +2,7 @@ import type { IMiddlewareRegister } from '../core/types/middleware_types';
 import { authMiddleware } from './auth.middleware';
 import { roleMiddleware } from './role.middleware';
 import { logger } from 'hono/logger';
+import { prettyJSON } from 'hono/pretty-json'
 
 /**
  * Global middleware that implements to all route.
@@ -10,6 +11,7 @@ import { logger } from 'hono/logger';
  */
 export const globalMiddlewares = [
     logger(),
+    prettyJSON(),
 ];
 
 /**
