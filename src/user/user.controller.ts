@@ -8,11 +8,30 @@ export class UserController {
 
     constructor(private readonly userService: UserService = new UserService()) {}
 
+    @Get('/user')
+    @Middleware(['auth', 'role:admin'])
+    public async index(ctx: Context) {
+
+        const user = await this.userService.getUser();
+
+        return ctx.json({
+            message: 'Success',
+            data: user
+        });
+    }
+
     @Get('/user/:id')
     @Middleware(['auth', 'role:admin'])
-    public async getUser(ctx: Context) {
-        const user = await this.userService.getUserById(ctx.req.param('id'));
-        return ctx.json(user);
+    public async show(ctx: Context) {
+
+        const id = parseInt(ctx.req.param('id'));
+
+        const user = await this.userService.getUserById(id);
+
+        return ctx.json({
+            message: 'Success',
+            data: user
+        });
     }
 
     @Post('/user')
@@ -33,7 +52,8 @@ export class UserController {
         // ? Response
         return ctx.json({
             requestId: ctx.get('requestId'),
-            user
+            message: 'Success',
+            data: user
         });
     }
 }

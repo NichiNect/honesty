@@ -1,4 +1,3 @@
-import 'reflect-metadata';
 import { Hono } from 'hono';
 import type { Context } from 'hono';
 import type { IRouteSchema, IHTTPMethod } from '../types/route_types';
@@ -38,7 +37,7 @@ export function Post(path: string) {
     return function (target: any,  propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) {
 
         if (!descriptor.value) {
-            throw new Error('Descriptor value is undefined. Make sure the decorator Get is applied correctly.');
+            throw new Error('Descriptor value is undefined. Make sure the decorator Post is applied correctly.');
         }
 
         const routes: IRouteSchema[] = Reflect.getMetadata(routeMetadataKey, target.constructor) || [];

@@ -1,12 +1,12 @@
 import 'reflect-metadata';
 import { Hono } from 'hono';
-import { applyRoutes } from './core/decorators/route_decorator';
-
-import { UserController } from './user';
-import { globalMiddlewares } from './middleware';
+import type { Context } from 'hono';
 import { requestId } from 'hono/request-id';
 import { HTTPException } from 'hono/http-exception';
-import type { Context } from 'hono';
+import { applyRoutes } from './core/decorators/route_decorator';
+
+import { globalMiddlewares } from './middleware';
+import { UserController } from './user';
 
 const app = new Hono();
 
