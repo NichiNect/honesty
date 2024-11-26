@@ -6,21 +6,18 @@ import { middlewareAliases } from '../../middleware';
 
 const routeMetadataKey = Symbol('routes');
 
-/**
- * Decorator for HTTP Get method.
- */
-export function Get(path: string) {
-
-    return function (target: any,  propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) {
+function decoratorHandler(method: IHTTPMethod, routePath: string = '/') {
+    
+    return (target: any,  propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) => {
 
         if (!descriptor.value) {
-            throw new Error('Descriptor value is undefined. Make sure the decorator Get is applied correctly.');
+            throw new Error(`Descriptor value is undefined. Make sure the decorator ${method[0].toUpperCase() + method.substring(1)} is applied correctly.`);
         }
 
         const routes: IRouteSchema[] = Reflect.getMetadata(routeMetadataKey, target.constructor) || [];
         routes.push({
-            method: 'get', 
-            path, 
+            method, 
+            path: routePath, 
             handler: descriptor.value,
             handlerName: propertyKey
         });
@@ -30,26 +27,38 @@ export function Get(path: string) {
 }
 
 /**
+ * Decorator for HTTP Get method.
+ */
+export function Get(path: string) {
+    return decoratorHandler('get', path);
+}
+
+/**
  * Decorator for HTTP Post method.
  */
 export function Post(path: string) {
+    return decoratorHandler('post', path);
+}
 
-    return function (target: any,  propertyKey: string, descriptor: TypedPropertyDescriptor<(ctx: Context) => Promise<any>>) {
+/**
+ * Decorator for HTTP Put method.
+ */
+export function Put(path: string) {
+    return decoratorHandler('put', path);
+}
 
-        if (!descriptor.value) {
-            throw new Error('Descriptor value is undefined. Make sure the decorator Post is applied correctly.');
-        }
+/**
+ * Decorator for HTTP Patch method.
+ */
+export function Patch(path: string) {
+    return decoratorHandler('patch', path);
+}
 
-        const routes: IRouteSchema[] = Reflect.getMetadata(routeMetadataKey, target.constructor) || [];
-        routes.push({
-            method: 'post',
-            path, 
-            handler: descriptor.value,
-            handlerName: propertyKey
-        });
-
-        Reflect.defineMetadata(routeMetadataKey, routes, target.constructor);
-    }
+/**
+ * Decorator for HTTP Delete method.
+ */
+export function Delete(path: string) {
+    return decoratorHandler('delete', path);
 }
 
 /**

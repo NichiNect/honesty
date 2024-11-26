@@ -1,6 +1,6 @@
 import type { Context } from "hono"
 
-export type IHTTPMethod = 'get' | 'post'
+export type IHTTPMethod = 'get' | 'post' | 'put' | 'patch' | 'delete'
 
 export type IRouteSchema = {
     method: IHTTPMethod,
